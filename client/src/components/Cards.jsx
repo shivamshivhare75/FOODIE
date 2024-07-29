@@ -31,7 +31,7 @@ const Cards = ({ item }) => {
       };
 
       axios
-        .post("http://localhost:6001/carts", cartItem)
+        .post("https://foodie-backend-78wt.onrender.com/carts", cartItem)
         .then((response) => {
           if (response) {
             refetch();
@@ -103,7 +103,11 @@ const Cards = ({ item }) => {
           </h5>
           <button
             onClick={() => handleAddToCart(item)}
-            className={`btn ${inStock ? "bg-green text-white" : "bg-gray-400 text-white cursor-not-allowed"}`}
+            className={`btn ${
+              inStock
+                ? "bg-green text-white"
+                : "bg-gray-400 text-white cursor-not-allowed"
+            }`}
             disabled={!inStock}
           >
             {inStock ? "Add to Cart" : "Out of Stock"}

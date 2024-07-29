@@ -53,7 +53,7 @@ const Login = () => {
           email: result?.user?.email,
         };
         axios
-          .post("http://localhost:6001/users", userInfor)
+          .post("https://foodie-backend-78wt.onrender.com/users", userInfor)
           .then((response) => {
             alert("Signin successful");
 

@@ -12,7 +12,7 @@ const UpdateMenu = () => {
   const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
-  const baseURL = "http://localhost:6001"; // Base URL for your backend
+  const baseURL = "https://foodie-backend-78wt.onrender.com"; // Base URL for your backend
 
   const onSubmit = async (data) => {
     try {
@@ -34,7 +34,10 @@ const UpdateMenu = () => {
       if (imageUploadRes.data.success) {
         const filePath = imageUploadRes.data.filePath;
         // Check if the filePath already contains the base URL
-        if (!filePath.startsWith('http://') && !filePath.startsWith('https://')) {
+        if (
+          !filePath.startsWith("http://") &&
+          !filePath.startsWith("https://")
+        ) {
           imageUrl = `${baseURL}${filePath}`; // Construct full URL
         } else {
           imageUrl = filePath; // Use the existing URL
@@ -167,4 +170,3 @@ const UpdateMenu = () => {
 };
 
 export default UpdateMenu;
-
