@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require('dotenv').config();
 const app = express();
-const port = process.env.PORT || 6001; // Fixed typo: should be PORT instead of URI
+const port = process.env.PORT || 6001;
 const jwt = require('jsonwebtoken');
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const multer = require('multer');

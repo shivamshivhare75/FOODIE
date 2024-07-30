@@ -5,21 +5,32 @@ import Swal from "sweetalert2";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Loading from "../../components/Loading"; // Adjust the import path as necessary
 
 const CartPage = () => {
   const { user } = useContext(AuthContext);
   const [cart, refetch] = useCart();
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
-  // Update cartItems whenever cart changes
   useEffect(() => {
-    setCartItems(Array.isArray(cart) ? cart : []);
-  }, [cart]);
+    const fetchData = async () => {
+      try {
+        setLoading(true); // Set loading to true while fetching data
+        await refetch();
+        setCartItems(Array.isArray(cart) ? cart : []);
+      } catch (error) {
+        console.error("Error fetching cart data:", error);
+      } finally {
+        setLoading(false); // Set loading to false once data is fetched
+      }
+    };
 
-  // Calculate the total price for each item in the cart
+    fetchData();
+  }, [cart, refetch]);
+
   const calculateTotalPrice = (item) => item.price * item.quantity;
 
-  // Handle quantity increase
   const handleIncrease = async (item) => {
     try {
       const response = await fetch(
@@ -35,7 +46,7 @@ const CartPage = () => {
 
       if (response.ok) {
         const updatedCart = cartItems.map((cartItem) =>
-          cartItem.id === item.id
+          cartItem._id === item._id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
@@ -49,7 +60,6 @@ const CartPage = () => {
     }
   };
 
-  // Handle quantity decrease
   const handleDecrease = async (item) => {
     if (item.quantity > 1) {
       try {
@@ -66,7 +76,7 @@ const CartPage = () => {
 
         if (response.ok) {
           const updatedCart = cartItems.map((cartItem) =>
-            cartItem.id === item.id
+            cartItem._id === item._id
               ? { ...cartItem, quantity: cartItem.quantity - 1 }
               : cartItem
           );
@@ -81,16 +91,13 @@ const CartPage = () => {
     }
   };
 
-  // Calculate the cart subtotal
   const cartSubtotal = cartItems.reduce(
     (total, item) => total + calculateTotalPrice(item),
     0
   );
 
-  // Calculate the order total
   const orderTotal = cartSubtotal;
 
-  // Delete an item
   const handleDelete = (item) => {
     Swal.fire({
       title: "Are you sure?",
@@ -107,7 +114,7 @@ const CartPage = () => {
           .then((response) => {
             if (response) {
               refetch();
-              Swal.fire("Deleted!", "Your file has been deleted.", "success");
+              Swal.fire("Deleted!", "Your item has been deleted.", "success");
             }
           })
           .catch((error) => {
@@ -116,6 +123,10 @@ const CartPage = () => {
       }
     });
   };
+
+  if (loading) {
+    return <Loading />; // Show the Loading component while data is being fetched
+  }
 
   return (
     <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4">
@@ -149,7 +160,7 @@ const CartPage = () => {
               </thead>
               <tbody>
                 {cartItems.map((item, index) => (
-                  <tr key={index}>
+                  <tr key={item._id}>
                     <td>{index + 1}</td>
                     <td>
                       <div className="avatar">

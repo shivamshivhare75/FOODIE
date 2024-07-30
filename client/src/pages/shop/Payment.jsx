@@ -4,7 +4,6 @@ import { loadStripe } from "@stripe/stripe-js";
 import useCart from "../../hooks/useCart";
 import CheckoutForm from "./checkoutForm";
 
-
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK);
 
 const Payment = () => {
@@ -15,8 +14,6 @@ const Payment = () => {
     console.error("Cart is not an array:", cart);
     return <div>Error: Cart data is invalid</div>;
   }
-
-  console.log("Cart items:", cart);
 
   // Calculate the checkout prices
   const cartTotal = cart.reduce(

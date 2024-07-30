@@ -66,9 +66,8 @@ const checkoutForm = ({ price, cart }) => {
       // alert(confirmError);
       console.log(confirmError);
     }
-    console.log(paymentIntent);
+
     if (paymentIntent.status === "succeeded") {
-      console.log(paymentIntent.id);
       setCardError(`Your transaction id is ${paymentIntent.id}`);
       // payment info data
       const paymentInfo = {
@@ -81,10 +80,9 @@ const checkoutForm = ({ price, cart }) => {
         cartItems: cart.map((item) => item._id),
         menuItems: cart.map((item) => item.menuItemId),
       };
-      console.log(paymentInfo);
+
       // send information to backend
       axiosSecure.post("/payments", paymentInfo).then((res) => {
-        console.log(res.data);
         alert("Payment successful!");
         navigate("/order");
       });
