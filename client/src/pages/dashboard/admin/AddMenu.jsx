@@ -1,54 +1,50 @@
 import React from "react";
 import { FaUtensils } from "react-icons/fa";
 import { useForm } from "react-hook-form";
+import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
-
 const AddMenu = () => {
   const { register, handleSubmit, reset } = useForm();
+  const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
 
+  // image hosting key
+  const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
+
+  // console.log(image_hosting_key)
+
+  const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("image", data.image[0]);
-    formData.append("name", data.name);
-    formData.append("category", data.category);
-    formData.append("price", data.price);
-    formData.append("recipe", data.recipe);
-
-    try {
-      // First, upload the image
-      const imageUploadRes = await axiosSecure.post("/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (imageUploadRes.data.success) {
-        const imageUrl = imageUploadRes.data.filePath;
-        // Now, save the menu item with the image URL
-        const menuItem = {
-          name: data.name,
-          category: data.category,
-          price: parseFloat(data.price),
-          recipe: data.recipe,
-          image: imageUrl,
-        };
-
-        const postMenuItemRes = await axiosSecure.post("/menu", menuItem);
-        if (postMenuItemRes.status === 200) {
-          reset();
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Your Item Is Inserted successfully",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        }
+    const imageFile = { image: data.image[0] };
+    const hostingImg = await axiosPublic.post(image_hosting_api, imageFile, {
+      headers: {
+        "content-type": "multipart/form-data",
+      },
+    });
+    // console.log(hostingImg);
+    // console.log(data);
+    if (hostingImg.data.success) {
+      const menuItem = {
+        name: data.name,
+        category: data.category,
+        price: parseFloat(data.price),
+        recipe: data.recipe,
+        image: hostingImg.data.data.display_url,
+      };
+      // console.log(menuItem);
+      const postMenuItem = axiosSecure.post("/menu", menuItem);
+      if (postMenuItem) {
+        reset();
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Your Item Is Inserted successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
-    } catch (error) {
-      console.error("Error uploading image or saving menu item:", error);
     }
   };
 
@@ -57,6 +53,7 @@ const AddMenu = () => {
       <h2 className="text-2xl font-semibold my-4">
         Upload A New <span className="text-green">Menu Item</span>
       </h2>
+      {/* form */}
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-control w-full ">
@@ -70,7 +67,10 @@ const AddMenu = () => {
               className="input input-bordered w-full "
             />
           </div>
+
+          {/* 2nd row */}
           <div className="flex items-center gap-4 my-4">
+            {/* categories */}
             <div className="form-control w-full ">
               <label className="label">
                 <span className="label-text">Category*</span>
@@ -91,6 +91,7 @@ const AddMenu = () => {
                 <option value="popular">Popular</option>
               </select>
             </div>
+            {/* prices */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Price*</span>
@@ -103,6 +104,7 @@ const AddMenu = () => {
               />
             </div>
           </div>
+          {/* 3rd row */}
           <div className="form-control my-0">
             <label className="label">
               <span className="label-text">Recipe Details*</span>
@@ -110,9 +112,10 @@ const AddMenu = () => {
             <textarea
               {...register("recipe", { required: true })}
               className="textarea textarea-bordered h-24"
-              placeholder="Tell the world about your recipe"
+              placeholder="Tell the worlds about your recipe"
             ></textarea>
           </div>
+          {/* 4th row */}
           <div className="form-control w-full my-6">
             <input
               {...register("image", { required: true })}
@@ -120,6 +123,7 @@ const AddMenu = () => {
               className="file-input  w-full max-w-xs"
             />
           </div>
+          {/* button */}
           <button className="btn bg-green text-white px-6">
             Add Item <FaUtensils />
           </button>
