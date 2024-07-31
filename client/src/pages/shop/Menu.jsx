@@ -167,7 +167,7 @@ const Menu = () => {
         </div>
 
         {/* product card */}
-        <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-4 ">
+        <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-4 justify-items-center">
           {currentItems.map((item, index) => (
             <Cards key={index} item={item} />
           ))}
