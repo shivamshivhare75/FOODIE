@@ -15,6 +15,11 @@ const CartPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!user) {
+        setLoading(false); // If user is not present, stop loading
+        return;
+      }
+
       try {
         setLoading(true); // Set loading to true while fetching data
         await refetch();
@@ -27,7 +32,7 @@ const CartPage = () => {
     };
 
     fetchData();
-  }, [cart, refetch]);
+  }, [user, cart, refetch]); // Depend on the user as well
 
   const calculateTotalPrice = (item) => item.price * item.quantity;
 
@@ -126,6 +131,34 @@ const CartPage = () => {
 
   if (loading) {
     return <Loading />; // Show the Loading component while data is being fetched
+  }
+
+  // If the user is not logged in, display the "Back to Menu" button and empty cart message
+  if (!user) {
+    return (
+      <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4">
+        {/* Banner */}
+        <div className="bg-gradient-to-r from-0% from-[#FAFAFA] to-[#FCFCFC] to-100%">
+          <div className="py-28 flex flex-col items-center justify-center">
+            {/* Content */}
+            <div className="text-center px-4 space-y-7">
+              <h2 className="md:text-5xl text-4xl font-bold md:leading-snug leading-snug">
+                Items Added to The<span className="text-green"> Cart</span>
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center mt-20">
+          <p>Cart is empty. Please add products.</p>
+          <Link to="/menu">
+            <button className="btn bg-green text-white mt-3">
+              Back to Menu
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
