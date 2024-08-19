@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import Loading from "../../components/Loading"; // Adjust the import path as necessary
+import Loading from "../../components/Loading";
 
 const CartPage = () => {
   const { user } = useContext(AuthContext);
