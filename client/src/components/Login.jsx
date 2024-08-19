@@ -4,9 +4,10 @@ import { FaFacebookF, FaGithub, FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../contexts/AuthProvider";
 import axios from "axios";
+import { toast, Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 const Login = () => {
-  const [errorMessage, seterrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { signUpWithGmail, login } = useContext(AuthContext);
 
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Login = () => {
 
   const from = location.state?.from?.pathname || "/";
 
-  //react hook form
+  // React Hook Form
   const {
     register,
     handleSubmit,
@@ -28,22 +29,18 @@ const Login = () => {
     login(email, password)
       .then((result) => {
         // Signed in
-        const user = result.user;
-
-        alert("Login successful!");
-        navigate(from);
-        // console.log(user);
-        // ...
+        toast.success("Login successful!");
+        setTimeout(() => {
+          navigate(from);
+        }, 1000); // Delay for 1 second to let the toast message be visible
       })
       .catch((error) => {
-        const errorMessage = error.message;
-        seterrorMessage("Please provide valid email & password!");
+        setErrorMessage("Please provide valid email & password!");
       });
     reset();
   };
 
-  // login with google
-  // login with google
+  // Google sign-in handler
   const handleRegister = () => {
     signUpWithGmail()
       .then((result) => {
@@ -55,16 +52,15 @@ const Login = () => {
         axios
           .post("https://foodie-backend-78wt.onrender.com/users", userInfor)
           .then((response) => {
-            alert("Signin successful");
-
-            navigate("/");
+            toast.success("Sign-in successful");
+            setTimeout(() => {
+              navigate("/");
+            }, 1000); // Delay for 1 second to let the toast message be visible
           });
-        alert("Signin successful");
-
-        navigate("/");
       })
       .catch((error) => console.log(error));
   };
+
   return (
     <div className="max-w-md bg-white shadow w-full mx-auto flex items-center justify-center my-20">
       <div className="mb-5">
@@ -75,7 +71,7 @@ const Login = () => {
         >
           <h3 className="font-bold text-lg">Please Login!</h3>
 
-          {/* email */}
+          {/* Email */}
           <div className="form-control">
             <label className="label">
               <span className="label-text">Email</span>
@@ -88,7 +84,7 @@ const Login = () => {
             />
           </div>
 
-          {/* password */}
+          {/* Password */}
           <div className="form-control">
             <label className="label">
               <span className="label-text">Password</span>
@@ -106,16 +102,12 @@ const Login = () => {
             </label>
           </div>
 
-          {/* show errors */}
-          {errorMessage ? (
-            <p className="text-red text-xs italic">
-              Provide a correct username & password.
-            </p>
-          ) : (
-            ""
+          {/* Show errors */}
+          {errorMessage && (
+            <p className="text-red text-xs italic">{errorMessage}</p>
           )}
 
-          {/* submit btn */}
+          {/* Submit button */}
           <div className="form-control mt-4">
             <input
               type="submit"
@@ -124,7 +116,7 @@ const Login = () => {
             />
           </div>
 
-          {/* close btn */}
+          {/* Close button */}
           <Link to="/">
             <div className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
@@ -132,7 +124,7 @@ const Login = () => {
           </Link>
 
           <p className="text-center my-2">
-            Donot have an account?
+            Don’t have an account?
             <Link to="/signup" className="underline text-red ml-1">
               Signup Now
             </Link>
@@ -153,6 +145,8 @@ const Login = () => {
           </button>
         </div>
       </div>
+      {/* Toast Container for notifications */}
+      <Toaster />
     </div>
   );
 };

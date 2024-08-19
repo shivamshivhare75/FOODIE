@@ -2,8 +2,7 @@ import React, { useContext } from "react";
 import { FaFacebookF, FaGithub, FaGoogle } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast, Toaster } from "react-hot-toast"; // Import react-hot-toast
 import { AuthContext } from "../contexts/AuthProvider";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 
@@ -22,40 +21,38 @@ const Signup = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    const email = data.email;
-    const password = data.password;
+    const { email, password, name, photoUrl } = data;
     createUser(email, password)
       .then((result) => {
         const user = result.user;
-        updateUserProfile(data.email, data.photoUrl).then(() => {
-          const userInfor = {
-            name: data.name,
-            email: data.email,
-          };
-          axiosPublic.post("/users", userInfor).then((response) => {
+        updateUserProfile(name, photoUrl).then(() => {
+          const userInfor = { name, email };
+          axiosPublic.post("/users", userInfor).then(() => {
             toast.success("Signup successful");
-            navigate(from, { replace: true });
+            setTimeout(() => {
+              navigate(from, { replace: true });
+            }, 1000); // Delay for 1 second to let the toast message be visible
           });
         });
       })
       .catch((error) => {
-        const errorMessage = error.message;
-        toast.error(errorMessage);
+        toast.error(error.message);
       });
   };
 
-  // login with google
   const handleRegister = () => {
     signUpWithGmail()
       .then((result) => {
         const user = result.user;
         const userInfor = {
-          name: result?.user?.displayName,
-          email: result?.user?.email,
+          name: user.displayName,
+          email: user.email,
         };
-        axiosPublic.post("/users", userInfor).then((response) => {
+        axiosPublic.post("/users", userInfor).then(() => {
           toast.success("Signup successful");
-          navigate("/");
+          setTimeout(() => {
+            navigate("/");
+          }, 1000); // Delay for 1 second to let the toast message be visible
         });
       })
       .catch((error) => toast.error(error.message));
@@ -63,17 +60,18 @@ const Signup = () => {
 
   return (
     <div className="max-w-md bg-white shadow w-full mx-auto flex items-center justify-center my-10 relative">
-      <ToastContainer />
+      <Toaster /> {/* Toast Container for notifications */}
       <div className="mb-5">
         <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
           <h3 className="font-bold text-lg">Please Create An Account!</h3>
-          {/* name */}
+
+          {/* Name */}
           <div className="form-control">
             <label className="label">
               <span className="label-text">Name</span>
             </label>
             <input
-              type="name"
+              type="text"
               placeholder="Your name"
               className="input input-bordered"
               {...register("name", { required: "Name is required" })}
@@ -83,7 +81,7 @@ const Signup = () => {
             )}
           </div>
 
-          {/* email */}
+          {/* Email */}
           <div className="form-control">
             <label className="label">
               <span className="label-text">Email</span>
@@ -99,7 +97,7 @@ const Signup = () => {
             )}
           </div>
 
-          {/* password */}
+          {/* Password */}
           <div className="form-control">
             <label className="label">
               <span className="label-text">Password</span>
@@ -120,7 +118,7 @@ const Signup = () => {
             </label>
           </div>
 
-          {/* submit btn */}
+          {/* Submit Button */}
           <div className="form-control mt-1">
             <input
               type="submit"
@@ -128,15 +126,13 @@ const Signup = () => {
               value="Sign up"
             />
           </div>
-          {/* close btn */}
 
+          {/* Close Button */}
           <div
             className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
             onClick={() => {
-
               navigate("/");
               window.location.reload();
-
             }}
           >
             ✕

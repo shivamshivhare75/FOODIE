@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../contexts/AuthProvider";
 import axios from "axios";
+import { toast, Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 const Modal = () => {
   const {
@@ -28,15 +29,15 @@ const Modal = () => {
     const password = data.password;
     login(email, password)
       .then((result) => {
-        const user = result.user;
-        alert("Login successful");
-        document.getElementById("my_modal_5").close();
-        reset(); // Reset the form data
-        setErrorMessage(""); // Clear the error message
-        navigate(from, { replace: true });
+        toast.success("Login successful");
+        setTimeout(() => {
+          document.getElementById("my_modal_5").close();
+          reset(); // Reset the form data
+          setErrorMessage(""); // Clear the error message
+          navigate(from, { replace: true });
+        }, 1000); // Delay for 1 second
       })
       .catch((error) => {
-        const errorMessage = error.message;
         setErrorMessage("Provide a correct email and password");
       });
   };
@@ -53,9 +54,10 @@ const Modal = () => {
         axios
           .post("https://foodie-backend-78wt.onrender.com/users", userInfor)
           .then((response) => {
-            alert("Signin successful");
-
-            navigate("/");
+            toast.success("Register successful");
+            setTimeout(() => {
+              navigate("/");
+            }, 1000); // Delay for 1 second
           });
       })
       .catch((error) => console.log(error));
@@ -69,7 +71,7 @@ const Modal = () => {
   };
 
   return (
-    <dialog id="my_modal_5" className="modal modal-middle sm:modal-middle ">
+    <dialog id="my_modal_5" className="modal modal-middle sm:modal-middle">
       <div className="modal-box">
         <div className="modal-action mt-0 flex flex-col justify-center">
           <form
@@ -113,7 +115,7 @@ const Modal = () => {
 
             {/* error text */}
             {errorMessage && (
-              <p className="text-red text-xs italic ">{errorMessage}</p>
+              <p className="text-red text-xs italic">{errorMessage}</p>
             )}
             {/* login btn */}
             <div className="form-control mt-1">
@@ -124,7 +126,7 @@ const Modal = () => {
               />
             </div>
             <p className="text-center my-1">
-              Donot have an account?
+              Don’t have an account?
               <Link to="/signup" className="underline text-red ml-1">
                 Signup Now
               </Link>
@@ -153,6 +155,8 @@ const Modal = () => {
           </div>
         </div>
       </div>
+      {/* Toast Container for notifications */}
+      <Toaster />
     </dialog>
   );
 };
