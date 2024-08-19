@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { AuthContext } from "../../contexts/AuthProvider";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { toast, Toaster } from "react-hot-toast";
 
 const UpdateProfile = () => {
   const { updateUserProfile } = useContext(AuthContext);
@@ -24,11 +25,11 @@ const UpdateProfile = () => {
   const onSubmit = async (data) => {
     try {
       const imageFile = data.image[0];
-      
+
       // Check if the file type is PNG or JPEG
       if (!["image/png", "image/jpeg"].includes(imageFile.type)) {
-        alert("Wrong file type. Please upload a PNG or JPEG file.");
-        reset()
+        toast.error("Wrong file type. Please upload a PNG or JPEG file.");
+        reset();
         return;
       }
 
@@ -48,14 +49,17 @@ const UpdateProfile = () => {
 
         // Update user profile
         await updateUserProfile(name, photoURL);
-        alert("Profile Updated")
-        navigate(from, { replace: true });
+        toast.success("Profile updated successfully!");
+
+        // Delay navigation to ensure toast message is visible
+        setTimeout(() => {
+          navigate(from, { replace: true });
+        }, 1000); // Adjust delay as needed
       } else {
         throw new Error("Image upload failed");
       }
     } catch (error) {
-      console.error("An error occurred:", error);
-      // Handle error
+      toast.error("An error occurred: " + error.message);
     }
   };
 
@@ -63,7 +67,7 @@ const UpdateProfile = () => {
     <div className="flex items-center justify-center h-screen">
       <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
         <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
-          <h3 className="font-bold ">Update Your Profile</h3>
+          <h3 className="font-bold">Update Your Profile</h3>
           <div className="form-control">
             <label className="label">
               <span className="label-text">Name</span>
@@ -97,6 +101,8 @@ const UpdateProfile = () => {
           </div>
         </form>
       </div>
+      {/* Toast Container for notifications */}
+      <Toaster />
     </div>
   );
 };
